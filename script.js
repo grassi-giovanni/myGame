@@ -6,7 +6,7 @@ var myGameSide;
 var myGameSide2;
 var myGameSide3;
 var myGameSide4;
-
+var myObstacle;
 
 function startGame() {
     myGamePiece = new component(40, 20, "green", 150, 150);
@@ -15,6 +15,9 @@ function startGame() {
     myGameSide2 = new component(10, 1000, "red", 1490, 10);
     myGameSide3 = new component(1490, 10, "red", 10, 10);
     myGameSide4 = new component(1490, 10, "red", 10, 660);
+
+    myObstacle  = new component(10, 200, "green", 300, 120);    
+
     myGameArea.start();
 }
 
@@ -66,8 +69,7 @@ function updateGameArea() {
     myGamePiece.speedY = hsp * ((myGameArea.key == 40) - (myGameArea.key == 38));
     
     if (myGamePiece.x + hsp < myGameSide.x + myGameSide.width) {myGamePiece.speedX = 3; }
-    if (myGamePiece.x + 3 >  myGameSide3.x - myGameSide3.width) {myGamePiece.speedX = -3; }
-    if (myGamePiece.y + hsp < myGameSide2.y - myGameSide2.width) {myGamePiece.speedY = 3; }
+
     myGamePiece.newPos();    
     myGamePiece.update();
 
@@ -77,4 +79,5 @@ function updateGameArea() {
     myGameSide3.update();
     myGameSide4.update();
 
+   
 }
