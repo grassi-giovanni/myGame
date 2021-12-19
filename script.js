@@ -6,20 +6,29 @@ var myGameSide;
 var myGameSide2;
 var myGameSide3;
 var myGameSide4;
+
+//Ostacoli
+
 var myObstacle;
+var myObstacle2;
 
 function startGame() {
     myGamePiece = new component(40, 20, "green", 150, 150);
 
+    //Bordi
     myGameSide = new component(10, 1000, "red", 10, 10);
     myGameSide2 = new component(10, 1000, "red", 1490, 10);
     myGameSide3 = new component(1490, 10, "red", 10, 10);
     myGameSide4 = new component(1490, 10, "red", 10, 660);
 
-    myObstacle  = new component(10, 200, "green", 300, 120);    
+    //Ostacoli
+    myObstacle  = new component(10, 200, "blue", 300, 120);    
+    myObstacle2  = new component(10, 200, "blue", 700, 350);    
 
     myGameArea.start();
 }
+
+
 
 var myGameArea = {
     canvas : document.createElement("canvas"),
@@ -38,7 +47,10 @@ var myGameArea = {
     }, 
     clear : function(){
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
+    },
+    stop : function() {
+        clearInterval(this.interval);
+      }
 }
 
    
@@ -58,26 +70,68 @@ function component(width, height, color, x, y) {
     this.newPos = function() {
         this.x += this.speedX;
         this.y += this.speedY;        
-    }    
+    }   
+    this.crashWith = function(otherobj) {
+        var myleft = this.x;
+        var myright = this.x + (this.width);
+        var mytop = this.y;
+        var mybottom = this.y + (this.height);
+        var otherleft = otherobj.x;
+        var otherright = otherobj.x + (otherobj.width);
+        var othertop = otherobj.y;
+        var otherbottom = otherobj.y + (otherobj.height);
+        var crash = true;
+        if ((mybottom < othertop) ||
+        (mytop > otherbottom) ||
+        (myright < otherleft) ||
+        (myleft > otherright)) {
+          crash = false;
+        }
+        return crash;
+      } 
 }
 hsp = 3;
 function updateGameArea() {
-    myGameArea.clear();
-    myGamePiece.speedX = 0;
-    myGamePiece.speedY = 0;    
-    myGamePiece.speedX = hsp * ((myGameArea.key == 39) - (myGameArea.key == 37));
-    myGamePiece.speedY = hsp * ((myGameArea.key == 40) - (myGameArea.key == 38));
+    if (myGamePiece.crashWith(myObstacle)) {
+      myGameArea.stop();
+      alert("Refresh the page");
+    } else {
+
+        if (myGamePiece.crashWith(myObstacle2)){
+            myGameArea.stop();
+            alert("Refresh the page");
+        } else {
+            myGameArea.clear();
+            myGamePiece.speedX = 0;
+            myGamePiece.speedY = 0;    
+            myGamePiece.speedX = hsp * ((myGameArea.key == 39) - (myGameArea.key == 37));
+            myGamePiece.speedY = hsp * ((myGameArea.key == 40) - (myGameArea.key == 38));
+            
+            if (myGamePiece.x + hsp < myGameSide.x + myGameSide.width) {myGamePiece.speedX = 3; }
+        
+            myGamePiece.newPos();    
+            myGamePiece.update();
+        
+            //Carica i bordi
+            myGameSide.update();
+            myGameSide2.update();
+            myGameSide3.update();
+            myGameSide4.update();
+        
+            //Carica gli ostacoli
+            myObstacle.update();
+            myObstacle2.update();
+        }
+
+       
+    }
+  }
     
-    if (myGamePiece.x + hsp < myGameSide.x + myGameSide.width) {myGamePiece.speedX = 3; }
 
-    myGamePiece.newPos();    
-    myGamePiece.update();
 
-    //Carica i bordi
-    myGameSide.update();
-    myGameSide2.update();
-    myGameSide3.update();
-    myGameSide4.update();
+  
 
    
-}
+
+ 
+
