@@ -38,7 +38,21 @@ function startGame() {
        
 
     myGameArea.start();
+    animatedObject.loadImages();
+    bushObject.loadImages();
 }
+var bushObject = {
+  width: 100,
+  height: 50,
+  x: 1000,
+  y: 610 ,
+
+  loadImages: function() {
+    this.image = new Image(this.width, this.height);
+    this.image.src = "https://i.ibb.co/CPdHYdB/Bush-1.png";
+  }
+};
+
 
 
 
@@ -62,10 +76,78 @@ var myGameArea = {
     },
     stop : function() {
         clearInterval(this.interval);
-      }
+    },
+    drawGameObject: function(gameObject) {
+        this.context.drawImage(
+          gameObject.image,
+          gameObject.x,
+          gameObject.y,
+          gameObject.width,
+          gameObject.height
+        );
+    
+    }
+
+
+    
+      
 }
 
-   
+var animatedObject = {
+    speedX: 0,
+    speedY: 0,
+    width: 60,
+    height: 60,
+    x: 100,
+    y: 120,
+    imageList: [], //Vettore che conterra tutte le immagini caricate
+    contaFrame: 0, //Tiene conto di quanti frame sono passati
+    actualFrame: 0, //Specifica quale frame disegnare
+  
+    update: function() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+      this.contaFrame++;
+      if (this.contaFrame == 50) {
+        this.contaFrame = 0;
+        this.actualFrame = (1 + this.actualFrame) % this.imageList.length;
+        //console.log(this.actualFrame);
+        this.image = this.imageList[this.actualFrame];
+      }
+    },
+  
+    loadImages: function() {
+       for (imgPath of running) {
+        var img = new Image(this.width, this.height);
+        img.src = imgPath;
+        this.imageList.push(img);
+        //console.log(img);
+      }
+      this.image = this.imageList[this.actualFrame];
+    },
+    crashWith : function(otherobj) {
+        var myleft = this.x;
+        var myright = this.x + (this.width);
+        var mytop = this.y;
+        var mybottom = this.y + (this.height);
+        var otherleft = otherobj.x;
+        var otherright = otherobj.x + (otherobj.width);
+        var othertop = otherobj.y;
+        var otherbottom = otherobj.y + (otherobj.height);
+        var crash = true;
+        if ((mybottom < othertop) ||
+        (mytop > otherbottom) ||
+        (myright < otherleft) ||
+        (myleft > otherright)) {
+          crash = false;
+        }
+        return crash;
+      } 
+  };
+  
+  
+  
+     
 
 function component(width, height, color, x, y) {
     this.width = width;
@@ -111,54 +193,72 @@ function updateGameArea() {
     if (myGamePiece.crashWith(myGameSide3)){ myGamePiece.y += 3; }
     if (myGamePiece.crashWith(myGameSide4)){ myGamePiece.y -= 3; }
 
-    if (myGamePiece.crashWith(myObstacle)) {
+    if (animatedObject.crashWith(myGameSide)){ animatedObject.x += 3; }
+    if (animatedObject.crashWith(myGameSide2)){ animatedObject.x -= 3; }
+    if (animatedObject.crashWith(myGameSide3)){ animatedObject.y += 3; }
+    if (animatedObject.crashWith(myGameSide4)){ animatedObject.y -= 3; }
+
+    if (myGamePiece.crashWith(myObstacle) || animatedObject.crashWith(myObstacle)) {
       myGameArea.stop();
       alert("Refresh the page, you losed");
     } else {
 
-        if (myGamePiece.crashWith(myObstacle2)){
+        if (myGamePiece.crashWith(myObstacle2) || animatedObject.crashWith(myObstacle2)){
             myGameArea.stop();
             alert("Refresh the page, you losed");
         } else {
 
-            if (myGamePiece.crashWith(myObstacle3)){
+            if (myGamePiece.crashWith(myObstacle3) || animatedObject.crashWith(myObstacle3)){
                 myGameArea.stop();
                 alert("Refresh the page, you losed");
             } else {
 
-                if (myGamePiece.crashWith(myObstacle4)){
+                if (myGamePiece.crashWith(myObstacle4) || animatedObject.crashWith(myObstacle4)){
                     myGameArea.stop();
                     alert("Refresh the page, you losed");
 
                 }else {
-                    if (myGamePiece.crashWith(myObstacle5)){
+                    if (myGamePiece.crashWith(myObstacle5) || animatedObject.crashWith(myObstacle5)){
                         myGameArea.stop();
                         alert("Refresh the page, you losed");
 
                     }else{
 
-                        if(myGamePiece.crashWith(myObstacle6)){
+                        if(myGamePiece.crashWith(myObstacle6) || animatedObject.crashWith(myObstacle6)){
                             myGameArea.stop();
                             alert("Refresh the page, you losed");
 
                         }else {
 
-                            if(myGamePiece.crashWith(myObstacle7)){
+                            if(myGamePiece.crashWith(myObstacle7)|| animatedObject.crashWith(myObstacle7)){
                                 myGameArea.stop();
                                 alert("Refresh the page, you losed");
 
                             }else {
 
-                                if(myGamePiece.crashWith(myObstacle8)){
+                                if(myGamePiece.crashWith(myObstacle8) || animatedObject.crashWith(myObstacle8)){
                                     myGameArea.stop();
                                     alert("Refresh the page, you losed");
 
                                 }else{
                                     myGameArea.clear();
+
+                                    animatedObject.update();
+                                    
+                                    myGameArea.drawGameObject(animatedObject);
+                                    myGameArea.drawGameObject(bushObject);
+
                                     myGamePiece.speedX = 0;
                                     myGamePiece.speedY = 0;    
                                     myGamePiece.speedX = hsp * ((myGameArea.key == 39) - (myGameArea.key == 37));
                                     myGamePiece.speedY = hsp * ((myGameArea.key == 40) - (myGameArea.key == 38));
+
+
+                                    animatedObject.speedX = 0;
+                                    animatedObject.speedY = 0;
+                                    animatedObject.speedX = hsp * ((myGameArea.key == 39) - (myGameArea.key == 37));
+                                    animatedObject.speedY = hsp * ((myGameArea.key == 40) - (myGameArea.key == 38));
+
                                     
                                 
                                     myGamePiece.newPos();    
@@ -179,6 +279,8 @@ function updateGameArea() {
                                     myObstacle6.update();
                                     myObstacle7.update();
                                     myObstacle8.update();
+
+                                
                                 
                             
                     
